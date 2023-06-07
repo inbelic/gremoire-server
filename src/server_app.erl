@@ -5,11 +5,10 @@
 -export([start/0, start/2, stop/1]).
 
 start() ->
-    start(undefined, undefined).
+    start(normal, [3565, 3568, "gremoire"]).
 
-start(_Type, _Args) ->
-    io:format("Hello from server!~n", []),
-    ok.
+start(_Type, [ClientPort, HarnessPort, ExtProg]) ->
+    server_sup:start_link(ClientPort, HarnessPort, ExtProg).
 
 stop(_State) ->
     ok.

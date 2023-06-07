@@ -16,7 +16,7 @@ build: $(OBJS)
 
 run: build
 	cd build; \
-	$(ERL) $(CFLAGS) $(ESCRIPT)
+	$(ERL)
 
 $(ODIR)/%.beam: $(SRC)/%.erl
 	$(CXX) $(OUT) $<
