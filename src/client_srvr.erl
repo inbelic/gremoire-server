@@ -102,7 +102,7 @@ send_to_client(Cmd, Request, Sock) when byte_size(Request) < 254 ->
     gen_tcp:send(Sock, Bin).
 
 -spec do_forward(common:cmd(), common:request(), State :: term()) -> ok.
-do_forward(Cmd, <<>>, State) ->
+do_forward(_Cmd, <<>>, State) ->
     GameInfo = State#state.game_info,
     %% No need to bother the client we can just say that we are ready
     relayer:respond(GameInfo#game_info.id, ready);

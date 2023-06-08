@@ -70,7 +70,7 @@ in_lobby({call, From}, {validate, Cmd, Bin}, _Data) when ?IS_LOBBY_CMD(Cmd) ->
                end,
     {keep_state_and_data, [{reply, From, Validity}]};
 %% Lobby catch-all
-in_lobby({call, From}, Request, Data) ->
+in_lobby({call, From}, _Request, _Data) ->
     {keep_state_and_data, [{reply, From, error}]}.
 
 %% Game validate
@@ -90,7 +90,7 @@ in_game({call, From}, {update, Cmd}, Cmd) when ?IS_GAME_CMD(Cmd) ->
     {keep_state, waiting, [{reply, From, ok}]};
 
 %% Game catch-all
-in_game({call, From}, Request, Data) ->
+in_game({call, From}, _Request, _Data) ->
     {keep_state_and_data, [{reply, From, error}]}.
 
 
