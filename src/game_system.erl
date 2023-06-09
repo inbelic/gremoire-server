@@ -51,6 +51,10 @@ handle_cast(_Request, State) ->
 %% We only need to consider the Game commands
 -spec do_handle_forward(common:cmd(), common:request(), State :: term()) ->
                         {ok, State :: term()}.
+do_handle_forward(_, <<>>, #state{game_id = GameID} = State) ->
+    %% No action to take
+    ok = relayer:respond(GameID, ready),
+    {ok, State};
 do_handle_forward(?DISPLAY, _, #state{game_id = GameID} = State) ->
     %% Not concerned about what is displayed
     ok = relayer:respond(GameID, ready),
