@@ -87,7 +87,7 @@ do_init(Port) ->
     {ok, ListenSock}
         = gen_tcp:listen(Port,
                          [ binary
-                         , {packet, 1}
+                         , {packet, 2}
                          , {reuseaddr, true}
                          , {active, true}
                          ]),
