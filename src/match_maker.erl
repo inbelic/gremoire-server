@@ -148,7 +148,6 @@ run_queue(GameID, Queue) ->
 next_game_id(GIDs) ->
     length(GIDs) + 1.
 
-
 %% Functions surrounding the start of a new game and the worker that is spawned
 %% to do so
 -spec start_game(common:game_id(), queue()) -> ok.
@@ -179,6 +178,11 @@ start_game(GameID, Queue) ->
     ok.
 
 -spec randomize_queue([common:game_id()]) -> [common:game_id()].
+-ifdef(debug).
+%% When testing we want the users to be in a fixed order
+randomize_queue(List) ->
+    List.
+-else.
 randomize_queue(List) ->
     randomize_queue(List, length(List), []).
 
@@ -188,3 +192,4 @@ randomize_queue(List, N, Acc) ->
     Index = rand:uniform(N) - 1,
     {Front, [Choosen | Back]} = lists:split(Index, List),
     randomize_queue(Front ++ Back, N - 1, [Choosen | Acc]).
+-endif.

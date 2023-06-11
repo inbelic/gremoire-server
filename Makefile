@@ -1,7 +1,7 @@
 CXX := erlc
 ERL =erl
 
-CFLAGS=-pa ebin
+CFLAGS=
 ESCRIPT=-eval "server_app:start()"
 
 SRC=src
@@ -18,8 +18,14 @@ run: build
 	cd build; \
 	$(ERL)
 
+debug: CFLAGS += -Ddebug
+debug: build
+
+debug-run: CFLAGS += -Ddebug
+debug-run: run
+
 $(ODIR)/%.beam: $(SRC)/%.erl
-	$(CXX) $(OUT) $<
+	$(CXX) $(CFLAGS) $(OUT) $<
 
 clean:
 	rm -rf build/*

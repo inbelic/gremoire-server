@@ -68,15 +68,27 @@ do_handle_forward(?ORDER, Req, #state{game_id = GameID} = State) ->
     ok = relayer:respond(GameID, list_to_binary(Order)),
     {ok, State};
 do_handle_forward(?TARGET, Req, #state{game_id = GameID} = State) ->
-    %% Targets are packed as 1 byte segments of the CardID of potential targets
-    %% so we take the size of the Req and generate a random index of the
+    <<_CardID, _AbilityID, Targets/binary>> = Req,
+    %% Targets are then packed as 1 byte segments of the CardID of potential
+    %% targets so we take the size of the Req and generate a random index of the
     %% bytes, then we return that randomly selected byte
-    Len = byte_size(Req),
-    {RandIdx, RandState} = rand:uniform_s(Len, State#state.rand),
-    TargetIdx = RandIdx - 1, %% Account for 0 indexing of bytes
-    Target = binary:at(Req, TargetIdx),
+    Len = byte_size(Targets),
+    {TargetIdx, RandState} = get_rand_idx(Len, State#state.rand),
+    Target = binary:at(Targets, TargetIdx),
     ok = relayer:respond(GameID, <<Target>>),
     {ok, State#state{rand = RandState}};
 do_handle_forward(?RESULT, _, State) ->
     %% FIXME: need to do something to let the relay/router cleanup
     {stop, normal, State}.
+
+-spec get_rand_idx(integer(), rand:state()) -> {integer(), rand:state()}.
+-ifdef(debug).
+%% When testing we want the random behaviour to be in a fixed order
+get_rand_idx(_Len, RandState) ->
+  {0, RandState}.
+-else.
+get_rand_idx(Len, RandState0) ->
+    {RandIdx, RandState} = rand:uniform_s(Len, RandState0),
+    TargetIdx = RandIdx - 1, %% Account for 0 indexing of bytes
+    {TargetIdx, RandState}.
+-endif.
