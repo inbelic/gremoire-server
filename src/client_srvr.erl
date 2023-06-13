@@ -114,11 +114,14 @@ do_forward(Cmd, Request, State) ->
 
 
 %% Handle functions that can assume that the binary inputs are valid
--spec do_handle_general(common:cmd(), common:response(), State :: term()) -> ok.
+-spec do_handle_general(common:cmd(), common:response(), State :: term()) -> {ok, State :: term()}.
+do_handle_general(?ECHO, Bin, #state{sock = Sock} = State) ->
+    ok = send_to_client(?ECHO, Bin, Sock),
+    {ok, State};
 do_handle_general(_Cmd, _Bin, State) ->
     {ok, State}.
 
--spec do_handle_lobby(common:cmd(), common:response(), State :: term()) -> ok.
+-spec do_handle_lobby(common:cmd(), common:response(), State :: term()) ->  {ok, State :: term()}.
 do_handle_lobby(?LOGIN, Bin, #state{sock = Sock} = State) ->
     Username = binary_to_list(Bin),
     UserInfo = #user_info{name = Username},
@@ -132,7 +135,7 @@ do_handle_lobby(?QUEUE, ConfigBin, #state{} = State) ->
 do_handle_lobby(_Cmd, _Bin, State) ->
     {ok, State}.
 
--spec do_handle_game(common:cmd(), common:response(), State :: term()) -> ok.
+-spec do_handle_game(common:cmd(), common:response(), State :: term()) -> {ok, State :: term()}.
 do_handle_game(Cmd, Response, #state{game_info = GameInfo} = State) ->
     ok = client_sm:update_cmd(State#state.csm, Cmd),
     GameID = GameInfo#game_info.id,
